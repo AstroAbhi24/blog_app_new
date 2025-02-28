@@ -51,15 +51,13 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 15),
-                const AuthGradientButton(buttonText: "Sign In"),
+                AuthGradientButton(buttonText: "Sign In", onPressed: () {}),
                 const SizedBox(height: 15),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => SignUpPage(),
-                      ),
+                      MaterialPageRoute(builder: (context) => SignUpPage()),
                     );
                   },
                   child: RichText(
