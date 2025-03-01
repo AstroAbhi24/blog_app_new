@@ -16,6 +16,7 @@ abstract interface class AuthRemoteDataSource {
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient supabaseClient;
   AuthRemoteDataSourceImpl(this.supabaseClient);
+
   @override
   Future<String> loginWithEmailPassword({
     required String email,
@@ -41,6 +42,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException("User is null");
       }
       return response.user!.id;
+    } on AuthException catch (e) {
+      throw ServerException;(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
