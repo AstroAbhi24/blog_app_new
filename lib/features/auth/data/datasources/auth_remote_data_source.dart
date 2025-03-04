@@ -1,13 +1,14 @@
 import 'package:blog_app/core/Error/exceptions.dart';
+import 'package:blog_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthRemoteDataSource {
-  Future<String> signupWithEmailPassword({
+  Future<UserModel> signupWithEmailPassword({
     required String email,
     required String name,
     required String password,
   });
-  Future<String> loginWithEmailPassword({
+  Future<UserModel> loginWithEmailPassword({
     required String email,
     required String password,
   });
@@ -18,16 +19,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.supabaseClient);
 
   @override
-  Future<String> loginWithEmailPassword({
+  Future<UserModel> loginWithEmailPassword({
     required String email,
     required String password,
-  }) {
-    //TODO: implement loginWithEmailPassword
-    throw UnimplementedError();
+  }) async {
+    try {
+      final response = await supabaseClient.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      if (response.user == null) {
+        throw ServerException("User is null");
+      }
+      return UserModel.fromJson(response.user!.toJson());
+    } on AuthException {
+      throw ServerException;
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+
   }
 
   @override
-  Future<String> signupWithEmailPassword({
+  Future<UserModel> signupWithEmailPassword({
     required String email,
     required String name,
     required String password,
@@ -41,9 +55,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.user == null) {
         throw ServerException("User is null");
       }
-      return response.user!.id;
-    } on AuthException catch (e) {
-      throw ServerException;(e.message);
+      return UserModel.fromJson(response.user!.toJson());
+    } on AuthException {
+      throw ServerException;
     } catch (e) {
       throw ServerException(e.toString());
     }
